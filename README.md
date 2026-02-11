@@ -4,7 +4,9 @@
 
 ## Использование
 
-Откройте [index.html](index.html) в браузере или разверните на GitHub Pages.
+**Живая версия:** [https://orsaqe.github.io/marketing-calculator/](https://orsaqe.github.io/marketing-calculator/)
+
+Просто откройте ссылку в браузере — можете поделиться ей с кем угодно.
 
 ## Формулы
 
