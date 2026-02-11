@@ -119,6 +119,46 @@
       box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
     }
 
+    .input-wrap .input-orange {
+      background: #fff5eb;
+      border-color: #ffb366;
+    }
+
+    .input-wrap .input-orange:focus {
+      border-color: #e86c00;
+      box-shadow: 0 0 0 3px rgba(232, 108, 0, 0.2);
+    }
+
+    .instructions {
+      margin-top: 8px;
+    }
+
+    .instructions h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .instructions ul {
+      list-style: none;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .instructions li {
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .instructions li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #ff9500;
+    }
+
     .output {
       background: var(--output-bg);
       border-radius: var(--radius-sm);
@@ -165,47 +205,40 @@
     <p class="subtitle">Калькулятор метрик для рекламных кампаний</p>
 
     <div class="card">
-      <div class="card-title">Исходные данные</div>
+      <div class="card-title">Исходные данные (заполняются вручную)</div>
 
       <div class="row">
         <span class="label">CPC (стоимость клика)</span>
         <div class="input-wrap">
-          <input type="number" id="cpc" value="0.02" step="0.01" min="0">
+          <input type="number" id="cpc" class="input-orange" value="0" step="0.01" min="0" placeholder="0">
         </div>
       </div>
 
       <div class="row">
         <span class="label">Approve (%)</span>
         <div class="input-wrap">
-          <input type="number" id="approve" value="25" step="1" min="0" max="100">
+          <input type="number" id="approve" class="input-orange" value="0" step="1" min="0" max="100" placeholder="0">
         </div>
       </div>
 
       <div class="row">
         <span class="label">Чистая прибыль в месяц</span>
         <div class="input-wrap">
-          <input type="number" id="cleanProfit" value="10000" step="100" min="0">
+          <input type="number" id="cleanProfit" class="input-orange" value="0" step="100" min="0" placeholder="0">
         </div>
       </div>
 
       <div class="row">
         <span class="label">Sale (продаж)</span>
         <div class="input-wrap">
-          <input type="number" id="sale" value="24" step="1" min="0">
+          <input type="number" id="sale" class="input-orange" value="0" step="1" min="0" placeholder="0">
         </div>
       </div>
 
       <div class="row">
         <span class="label">ROI целевой (%)</span>
         <div class="input-wrap">
-          <input type="number" id="roiPercent" value="100" step="1" min="0">
-        </div>
-      </div>
-
-      <div class="row">
-        <span class="label">Коэффициент CPL (0–1)</span>
-        <div class="input-wrap">
-          <input type="number" id="cplFactor" value="0.25" step="0.01" min="0" max="1">
+          <input type="number" id="roiPercent" class="input-orange" value="0" step="1" min="0" placeholder="0">
         </div>
       </div>
     </div>
@@ -255,8 +288,20 @@
 
       <div class="row">
         <span class="label">CPL в Gads</span>
-        <div class="output" id="cplGads">2.25</div>
+        <div class="output" id="cplGads">—</div>
       </div>
+    </div>
+
+    <div class="card instructions">
+      <h3>Инструкция</h3>
+      <ul>
+        <li><strong>CPC</strong> — стоимость одного клика по рекламе (например, 0.02 для 2 центов за клик). Берите из статистики Google Ads или другой рекламной системы.</li>
+        <li><strong>Approve</strong> — процент одобренных заявок/лидов (от 0 до 100). Сколько процентов заявок переходят в оплаченные.</li>
+        <li><strong>Чистая прибыль в месяц</strong> — ваша чистая прибыль за месяц в денежных единицах (после всех расходов и комиссий).</li>
+        <li><strong>Sale</strong> — общее количество продаж/сделок за период, на который считаете (обычно месяц).</li>
+        <li><strong>ROI целевой (%)</strong> — желаемый возврат инвестиций в процентах. 100% означает, что на каждый потраченный рубль вы хотите заработать 1 рубль прибыли.</li>
+      </ul>
+      <p style="margin-top: 16px; font-size: 13px; color: var(--text-secondary);">Заполните все поля выше — остальные показатели рассчитаются автоматически. CPL в Gads использует коэффициент 0.25 по умолчанию.</p>
     </div>
   </div>
 
@@ -267,7 +312,6 @@
       cleanProfit: document.getElementById('cleanProfit'),
       sale: document.getElementById('sale'),
       roiPercent: document.getElementById('roiPercent'),
-      cplFactor: document.getElementById('cplFactor'),
     };
 
     const outputs = {
@@ -295,12 +339,13 @@
       return (n * 100).toFixed(2) + '%';
     }
 
+    const CPL_FACTOR = 0.25; // коэффициент CPL (C2), не выделен оранжевым — фиксированный
+
     function calculate() {
       const cpc = getNum('cpc');
       const cleanProfit = getNum('cleanProfit');
       const sale = getNum('sale');
       const roiPercent = getNum('roiPercent');
-      const cplFactor = getNum('cplFactor');
 
       // B4 = B3 / 30
       const dailyCleanProfit = cleanProfit / 30;
@@ -315,7 +360,7 @@
       const revenue = dailySpend + dailyCleanProfit;
 
       // G3 = B5 / (G7 + 1)
-      const saleResult = sale / (roiDecimal + 1);
+      const saleResult = roiDecimal >= 0 ? sale / (roiDecimal + 1) : 0;
 
       // G1 = G3 / 4
       const lead = saleResult / 4;
@@ -327,17 +372,20 @@
       const crSale = (saleResult > 0 && cpc > 0) ? 1 / (saleResult / cpc) : 0;
 
       // G9 = G1 - (G1 * C2)
-      const cplGads = lead - (lead * cplFactor);
+      const cplGads = lead - (lead * CPL_FACTOR);
 
-      outputs.dailyCleanProfit.textContent = formatNum(dailyCleanProfit);
-      outputs.lead.textContent = formatNum(lead, 0);
-      outputs.crLead.textContent = formatPercent(crLead);
-      outputs.saleResult.textContent = formatNum(saleResult, 0);
-      outputs.crSale.textContent = formatPercent(crSale);
-      outputs.dailySpend.textContent = formatNum(dailySpend);
-      outputs.revenue.textContent = formatNum(revenue);
-      outputs.roiDecimal.textContent = formatNum(roiDecimal);
-      outputs.cplGads.textContent = formatNum(cplGads);
+      const hasData = cpc > 0 || cleanProfit > 0 || sale > 0 || roiPercent > 0;
+      const dash = (v, dec, pct) => hasData ? (pct ? formatPercent(v) : formatNum(v, dec)) : "—";
+
+      outputs.dailyCleanProfit.textContent = dash(dailyCleanProfit, 2, false);
+      outputs.lead.textContent = dash(lead, 0, false);
+      outputs.crLead.textContent = dash(crLead, 2, true);
+      outputs.saleResult.textContent = dash(saleResult, 0, false);
+      outputs.crSale.textContent = dash(crSale, 2, true);
+      outputs.dailySpend.textContent = dash(dailySpend, 2, false);
+      outputs.revenue.textContent = dash(revenue, 2, false);
+      outputs.roiDecimal.textContent = dash(roiDecimal, 2, false);
+      outputs.cplGads.textContent = dash(cplGads, 2, false);
     }
 
     Object.values(inputs).forEach(input => {
