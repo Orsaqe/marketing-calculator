@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.06);
+      --text: #1d1d1f;
+      --text-secondary: #86868b;
+      --input-bg: #ffffff;
+      --input-border: #d2d2d7;
+      --input-focus: #0071e3;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --output-bg: #f5f5f7;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 15px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      gap: 16px;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .input-wrap {
+      flex-shrink: 0;
+      width: 140px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-sm);
+      text-align: right;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+    }
+
+    .output {
+      background: var(--output-bg);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 15px;
+      font-weight: 500;
+      text-align: right;
+      min-width: 140px;
+      flex-shrink: 0;
+    }
+
+    .output.percent {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--card-border);
+      margin: 24px 0;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 24px 16px;
+      }
+
+      .row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .input-wrap,
+      .output {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Marketing Calculator</h1>
+    <p class="subtitle">Калькулятор метрик для рекламных кампаний</p>
+
+    <div class="card">
+      <div class="card-title">Исходные данные</div>
+
+      <div class="row">
+        <span class="label">CPC (стоимость клика)</span>
+        <div class="input-wrap">
+          <input type="number" id="cpc" value="0.02" step="0.01" min="0">
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">Approve (%)</span>
+        <div class="input-wrap">
+          <input type="number" id="approve" value="25" step="1" min="0" max="100">
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">Чистая прибыль в месяц</span>
+        <div class="input-wrap">
+          <input type="number" id="cleanProfit" value="10000" step="100" min="0">
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">Sale (продаж)</span>
+        <div class="input-wrap">
+          <input type="number" id="sale" value="24" step="1" min="0">
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">ROI целевой (%)</span>
+        <div class="input-wrap">
+          <input type="number" id="roiPercent" value="100" step="1" min="0">
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">Коэффициент CPL (0–1)</span>
+        <div class="input-wrap">
+          <input type="number" id="cplFactor" value="0.25" step="0.01" min="0" max="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Результаты расчётов</div>
+
+      <div class="row">
+        <span class="label">Daily Clean Profit</span>
+        <div class="output" id="dailyCleanProfit">333.33</div>
+      </div>
+
+      <div class="row">
+        <span class="label">Lead</span>
+        <div class="output" id="lead">3</div>
+      </div>
+
+      <div class="row">
+        <span class="label">CR(Lead)</span>
+        <div class="output percent" id="crLead">0.67%</div>
+      </div>
+
+      <div class="row">
+        <span class="label">Sale</span>
+        <div class="output" id="saleResult">12</div>
+      </div>
+
+      <div class="row">
+        <span class="label">CR(sale)</span>
+        <div class="output percent" id="crSale">0.17%</div>
+      </div>
+
+      <div class="row">
+        <span class="label">Daily spend</span>
+        <div class="output" id="dailySpend">333.33</div>
+      </div>
+
+      <div class="row">
+        <span class="label">Revenue</span>
+        <div class="output" id="revenue">666.67</div>
+      </div>
+
+      <div class="row">
+        <span class="label">ROI в десятичных</span>
+        <div class="output" id="roiDecimal">1</div>
+      </div>
+
+      <div class="row">
+        <span class="label">CPL в Gads</span>
+        <div class="output" id="cplGads">2.25</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const inputs = {
+      cpc: document.getElementById('cpc'),
+      approve: document.getElementById('approve'),
+      cleanProfit: document.getElementById('cleanProfit'),
+      sale: document.getElementById('sale'),
+      roiPercent: document.getElementById('roiPercent'),
+      cplFactor: document.getElementById('cplFactor'),
+    };
+
+    const outputs = {
+      dailyCleanProfit: document.getElementById('dailyCleanProfit'),
+      lead: document.getElementById('lead'),
+      crLead: document.getElementById('crLead'),
+      saleResult: document.getElementById('saleResult'),
+      crSale: document.getElementById('crSale'),
+      dailySpend: document.getElementById('dailySpend'),
+      revenue: document.getElementById('revenue'),
+      roiDecimal: document.getElementById('roiDecimal'),
+      cplGads: document.getElementById('cplGads'),
+    };
+
+    function getNum(id) {
+      const v = parseFloat(inputs[id].value);
+      return isNaN(v) ? 0 : v;
+    }
+
+    function formatNum(n, decimals = 2) {
+      return n.toFixed(decimals);
+    }
+
+    function formatPercent(n) {
+      return (n * 100).toFixed(2) + '%';
+    }
+
+    function calculate() {
+      const cpc = getNum('cpc');
+      const cleanProfit = getNum('cleanProfit');
+      const sale = getNum('sale');
+      const roiPercent = getNum('roiPercent');
+      const cplFactor = getNum('cplFactor');
+
+      // B4 = B3 / 30
+      const dailyCleanProfit = cleanProfit / 30;
+
+      // G7 = E1 / 100
+      const roiDecimal = roiPercent / 100;
+
+      // G5 = B4 / G7
+      const dailySpend = roiDecimal > 0 ? dailyCleanProfit / roiDecimal : 0;
+
+      // G6 = G5 + B4
+      const revenue = dailySpend + dailyCleanProfit;
+
+      // G3 = B5 / (G7 + 1)
+      const saleResult = sale / (roiDecimal + 1);
+
+      // G1 = G3 / 4
+      const lead = saleResult / 4;
+
+      // G2 = B1 / G1 (as percentage)
+      const crLead = lead > 0 ? cpc / lead : 0;
+
+      // G4 = 1 / (G3 / B1) (as percentage)
+      const crSale = (saleResult > 0 && cpc > 0) ? 1 / (saleResult / cpc) : 0;
+
+      // G9 = G1 - (G1 * C2)
+      const cplGads = lead - (lead * cplFactor);
+
+      outputs.dailyCleanProfit.textContent = formatNum(dailyCleanProfit);
+      outputs.lead.textContent = formatNum(lead, 0);
+      outputs.crLead.textContent = formatPercent(crLead);
+      outputs.saleResult.textContent = formatNum(saleResult, 0);
+      outputs.crSale.textContent = formatPercent(crSale);
+      outputs.dailySpend.textContent = formatNum(dailySpend);
+      outputs.revenue.textContent = formatNum(revenue);
+      outputs.roiDecimal.textContent = formatNum(roiDecimal);
+      outputs.cplGads.textContent = formatNum(cplGads);
+    }
+
+    Object.values(inputs).forEach(input => {
+      input.addEventListener('input', calculate);
+      input.addEventListener('change', calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
